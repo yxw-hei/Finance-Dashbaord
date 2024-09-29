@@ -1,7 +1,3 @@
-// import { useContext, useEffect, useState, useCallback } from "react";
-// import { StockContext } from "./StockContext";
-
-
 
 
 // function StockInput()  {
@@ -95,29 +91,29 @@
 // export default StockInput;
 
 
-import React, { useContext, useCallback } from 'react';
+import { useContext, useCallback, useState } from 'react';
 import { StockContext } from './StockContext';
 
-const StockInput = () => {
+function StockInput() {
   const { addStock, updateStockPrice } = useContext(StockContext);
-  const [symbol, setSymbol] = React.useState('');
-  const [purchasePrice, setPurchasePrice] = React.useState('');
-  const [quantity, setQuantity] = React.useState('');
+  const [ symbol, setSymbol] = useState('');
+  const [ purchasePrice, setPurchasePrice] = useState('');
+  const [ quantity, setQuantity] = useState('');
 
   // Memoized fetchStockPrice function using useCallback
-  const fetchStockPrice = useCallback(() => {
-    if (!symbol) return; // Prevent fetching if symbol is empty
-    const apiKey = 'YOUR_API_KEY'; // Replace with your actual API key
-    fetch(`https://api.example.com/stock/${symbol}/quote?token=${apiKey}`)
-      .then(response => response.json())
+  function fetchStockPrice() {
+
+   useCallback(() => {
+    fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=IBM&apikey=demo`)
+      .then(res => res.json())
       .then(data => {
-        const latestPrice = data.latestPrice;
-        updateStockPrice(symbol, latestPrice);
+        const currentPrice = data.currentPrice;
+        updateStockPrice(symbol, currentPrice);
       })
       .catch(error => {
         console.error('Error fetching stock price:', error);
       });
-  }, [symbol, updateStockPrice]);
+  }, [symbol, updateStockPrice])};
 
   const handleSubmit = (e) => {
     e.preventDefault();

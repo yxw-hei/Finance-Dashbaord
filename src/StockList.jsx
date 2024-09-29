@@ -50,7 +50,7 @@ const StockList = () => {
     const fetchStockPrices = () => {
       stockList.forEach(stock => {
         const apiKey = 'YOUR_API_KEY'; // Replace with your actual API key
-        fetch(`https://api.example.com/stock/${stock.symbol}/quote?token=${apiKey}`)
+        fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${stock.symbol}&apikey=7ROPXJYG0UJWJF2R`)
           .then(response => response.json())
           .then(data => {
             const latestPrice = data.latestPrice;
