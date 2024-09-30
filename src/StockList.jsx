@@ -39,21 +39,22 @@
 
 // export default StockList;
 
-import React, { useContext, useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { StockContext } from './StockContext';
+import './StockStyling.css';
 
-const StockList = () => {
+function StockList() {
   const { stockList, updateStockPrice } = useContext(StockContext); // Access stockList from context
 
   // Fetch stock prices whenever stockList changes or on component mount
   useEffect(() => {
     const fetchStockPrices = () => {
       stockList.forEach(stock => {
-        const apiKey = 'YOUR_API_KEY'; // Replace with your actual API key
-        fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${stock.symbol}&apikey=7ROPXJYG0UJWJF2R`)
+        
+        fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=" + symbol + "&apikey=demo")
           .then(response => response.json())
           .then(data => {
-            const latestPrice = data.latestPrice;
+            const latestPrice = parseFloat(data['Global Quote']['05. price']);
             updateStockPrice(stock.symbol, latestPrice);
           })
           .catch(error => {
@@ -80,11 +81,12 @@ const StockList = () => {
           return (
             <li key={stock.symbol}>
               <p>Stock Symbol: {stock.symbol}</p>
-              <p>Purchase Price: ${stock.purchasePrice}</p>
+              <p>Purchase Price: {stock.purchasePrice}</p>
               <p>Quantity: {stock.quantity}</p>
+              <p>Current Price: {stock.latestPrice}</p>
               {stock.latestPrice !== null ? (
                 <>
-                  <p>Latest Price: ${stock.latestPrice}</p>
+                <p>Profit/Loss: ${((stock.latestPrice - stock.purchasePrice) * stock.quantity).toFixed(2)}</p>
                   <p>
                     {profitLoss !== null && (
                       <span
