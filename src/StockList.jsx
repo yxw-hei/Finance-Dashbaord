@@ -34,10 +34,7 @@
 //       )}
 //     </div>
     
-//   );
-// };
 
-// export default StockList;
 
 import { useContext, useEffect } from 'react';
 import { StockContext } from './StockContext';
@@ -49,9 +46,9 @@ function StockList() {
   // Fetch stock prices whenever stockList changes or on component mount
   useEffect(() => {
     const fetchStockPrices = () => {
-      stockList.forEach(stock => {
+      stockList.map(stock => {
         
-        fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=" + symbol + "&apikey=demo")
+        fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=" + stock.symbol + "&apikey=demo")
           .then(response => response.json())
           .then(data => {
             const latestPrice = parseFloat(data['Global Quote']['05. price']);
@@ -74,9 +71,7 @@ function StockList() {
       <ul>
         {stockList.length === 0 && <p>No stocks added yet.</p>}
         {stockList.map((stock) => {
-          const isGain = stock.latestPrice && stock.latestPrice > stock.purchasePrice;
-          const isLoss = stock.latestPrice && stock.latestPrice < stock.purchasePrice;
-          const profitLoss = stock.latestPrice ? (stock.latestPrice - stock.purchasePrice) * stock.quantity : null;
+        
 
           return (
             <li key={stock.symbol}>
@@ -86,19 +81,10 @@ function StockList() {
               <p>Current Price: {stock.latestPrice}</p>
               {stock.latestPrice !== null ? (
                 <>
-                <p>Profit/Loss: ${((stock.latestPrice - stock.purchasePrice) * stock.quantity).toFixed(2)}</p>
-                  <p>
-                    {profitLoss !== null && (
-                      <span
-                        style={{
-                          color: isGain ? 'green' : isLoss ? 'red' : 'black',
-                        }}
-                      >
-                        {isGain && `Profit: $${profitLoss.toFixed(2)}`}
-                        {isLoss && `Loss: $${profitLoss.toFixed(2)}`}
-                      </span>
-                    )}
-                  </p>
+                <p style={{
+                          color: stock.latestPrice > stock.purchasePrice ? 'green' : 'red' ,
+                        }}>Profit/Loss: {((stock.latestPrice - stock.purchasePrice) * stock.quantity).toFixed(2)}</p>
+
                 </>
               ) : (
                 <p>Fetching latest price...</p>

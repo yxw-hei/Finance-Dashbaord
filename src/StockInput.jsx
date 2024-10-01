@@ -4,14 +4,14 @@ import './StockStyling.css';
 
 function  StockInput()  {
   const { addStock, updateStockPrice } = useContext(StockContext);
-  const [symbol, setSymbol] = useState('');
-  const [purchasePrice, setPurchasePrice] = useState('');
-  const [quantity, setQuantity] = useState('');
+  const [ symbol, setSymbol] = useState('');
+  const [ purchasePrice, setPurchasePrice] = useState('');
+  const [ quantity, setQuantity] = useState('');
+  const [ currentPrice, setLatestPrice] = useState(null);
   
 
   // Memoized fetchStockPrice function using useCallback
-  function fetchStockPrice() {
-    useCallback((symbol) => {
+ const fetchStockPrice = useCallback((symbol) => {
 
      fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=" + symbol + "&apikey=demo")
       .then(response => {
@@ -21,12 +21,12 @@ function  StockInput()  {
         return response.json();
       })
       .then(data => {
-        const latestPrice = data['Global Quote']['05. price'];
-
-        updateStockPrice(symbol, latestPrice);
+        const currentPrice = data['Global Quote']['05. price'];
+        setLatestPrice(parseFloat(currentPrice));
+        updateStockPrice(symbol, currentPrice);
       })
 
-  }, [symbol, updateStockPrice])};
+  }, [updateStockPrice]);
 
 
   const handleSymbolChange = (e) => {
@@ -43,23 +43,23 @@ function  StockInput()  {
 
   function handleSubmit()  {
     if (symbol && purchasePrice && quantity) {
-    //  fetchStockPrice(symbol).then((latestPrice) => {
+        fetchStockPrice(symbol);
      //   if (latestPrice) {
           // Add the stock only if we got a valid latest price from the API
           addStock({
             symbol,
             purchasePrice: parseFloat(purchasePrice),
             quantity: parseInt(quantity),
-            latestPrice, // Assign the fetched latest price here
+            currentPrice, // Assign the fetched latest price here
           });
 
           // Clear the input fields after adding the stock
           setSymbol('');
           setPurchasePrice('');
           setQuantity('');
-      //  }
+        }
    //   });
-    } else {
+      else {
       alert('Please fill in all fields');
     }
   };
