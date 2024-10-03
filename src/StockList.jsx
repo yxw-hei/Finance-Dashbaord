@@ -48,7 +48,7 @@ function StockList() {
     const fetchStockPrices = () => {
       stockList.map(stock => {
         
-        fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=" + stock.symbol + "&apikey=demo")
+        fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=" + stock.symbol + "&apikey=7ROPXJYG0UJWJF2R")
           .then(response => response.json())
           .then(data => {
             const latestPrice = parseFloat(data['Global Quote']['05. price']);
@@ -66,7 +66,7 @@ function StockList() {
   }, [stockList, updateStockPrice]); // Trigger effect on mount and when stockList changes
 
   return (
-    <div>
+    <div className='stocklist'>
       <h2>Stock List</h2>
       <ul>
         {stockList.length === 0 && <p>No stocks added yet.</p>}

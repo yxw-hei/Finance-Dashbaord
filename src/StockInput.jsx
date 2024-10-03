@@ -13,7 +13,7 @@ function  StockInput()  {
   // Memoized fetchStockPrice function using useCallback
  const fetchStockPrice = useCallback((symbol) => {
 
-     fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=" + symbol + "&apikey=demo")
+     fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=" + symbol + "&apikey=7ROPXJYG0UJWJF2R")
       .then(response => {
         if (!response.ok) {
           alert('Invalid stock symbol'); // Trigger error if symbol is invalid
