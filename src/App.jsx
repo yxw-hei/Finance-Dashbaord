@@ -2,7 +2,7 @@ import React from 'react'
 import './App.css'
 import StockInput from './StockInput';
 import { StockProvider } from './StockContext';
-import StockList from './Stocklist';
+import StockList from './StockList'
 
 
 function App() {
