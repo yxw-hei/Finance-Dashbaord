@@ -1,15 +1,15 @@
 import { useContext, useEffect } from 'react';
 import { StockContext } from './StockContext';
 import './StockStyling.css';
+import { useCallback } from 'react';
 
 function StockList() {
   const { stockList, updateStockPrice } = useContext(StockContext); // Access stockList from context
 
   // Fetch stock prices whenever stockList changes or on component mount
-  useEffect(() => {
-    const fetchStockPrices = () => {
-      stockList.map(stock => {
-        
+  
+    const fetchStockPrices = useCallback((stocks) => {
+      stocks.map(stock => {
         fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=" + stock.symbol + "&apikey=7ROPXJYG0UJWJF2R")
           .then(response => response.json())
           .then(data => {
@@ -20,12 +20,14 @@ function StockList() {
             console.error(`Error fetching stock price for ${stock.symbol}:`, error);
           });
       });
-    };
+    });
+   
 
+  useEffect(() => {
     if (stockList.length > 0) {
-      fetchStockPrices(); // Only fetch if there are stocks in the list
+      fetchStockPrices(stockList); // Only fetch if there are stocks in the list
     }
-  }, [stockList, updateStockPrice]); // Trigger effect on mount and when stockList changes
+  }, []); // Trigger effect on mount and when stockList changes
 
   return (
     <div className='stocklist'>
@@ -33,8 +35,6 @@ function StockList() {
       <ul>
         {stockList.length === 0 && <p>No stocks added yet.</p>}
         {stockList.map((stock) => {
-        
-
           return (
             <li key={stock.symbol}>
               <p>Stock Symbol: {stock.symbol}</p>
@@ -42,12 +42,9 @@ function StockList() {
               <p>Quantity: {stock.quantity}</p>
               <p>Current Price: {stock.latestPrice}</p>
               {stock.latestPrice !== null ? (
-                <>
                 <p style={{
-                          color: stock.latestPrice > stock.purchasePrice ? 'green' : 'red' ,
-                        }}>Profit/Loss: {((stock.latestPrice - stock.purchasePrice) * stock.quantity).toFixed(2)}</p>
-
-                </>
+                color: stock.latestPrice > stock.purchasePrice ? 'green' : 'red' ,
+                }}>Profit/Loss: {((stock.latestPrice - stock.purchasePrice) * stock.quantity).toFixed(2)}</p>        
               ) : (
                 <p>Fetching latest price...</p>
               )}

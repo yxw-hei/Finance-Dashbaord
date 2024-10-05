@@ -6,22 +6,18 @@
     column-gap: 10px;
     align-items: center;
   }
-  
-  #currencySelect {
-    height: 50px;
-    background-color: #eac46b;
-    color: black;
-    font-weight: bold;
-    width: auto;
-    border-radius: 10px;
+  /* Remove bullets from unordered lists */
+ul {
+  list-style-type: none; 
+}
+
+  li {
+    padding: 10px 15px; 
+    margin: 5px 0; 
+    border: 5px solid #cccccc78; 
+    border-radius: 5px; 
+    transition: background-color 0.3s, transform 0.2s; 
+    
   }
-  
-  .stocklist-input {
-    height: 50px;
-    border: 1px solid grey;
-  }
-  
-  .container-result {
-    font-size: 30px;
-    font-weight: bold;
-  }
+
+

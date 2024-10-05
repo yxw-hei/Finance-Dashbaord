@@ -13,24 +13,28 @@ function  StockInput()  {
   // Memoized fetchStockPrice function using useCallback
  const fetchStockPrice = useCallback((symbol) => {
 
-     fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=" + symbol + "&apikey=7ROPXJYG0UJWJF2R")
-      .then(response => {
-        if (!response.ok) {
-          alert('Invalid stock symbol'); // Trigger error if symbol is invalid
-        }
-        return response.json();
-      })
+    return fetch("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=" + symbol + "&apikey=7ROPXJYG0UJWJF2R")
+      .then(response => response.json())
       .then(data => {
-        const currentPrice = data['Global Quote']['05. price'];
+        const priceChk = data?.['Global Quote']?.['05. price'];
+        const currentPrice = parseFloat(priceChk);
+        if ( !priceChk || isNaN(currentPrice) || currentPrice <= 0) {
+          alert('Invalid stock symbol'); // Alert if symbol is invalid 
+          return null;
+        }
         setLatestPrice(parseFloat(currentPrice));
         updateStockPrice(symbol, currentPrice);
+        return currentPrice;
       })
+      .catch(error => {
+        console.error('Error fetching stock price:', error); // Catch network errors
+       });
 
   }, [updateStockPrice]);
 
 
   const handleSymbolChange = (e) => {
-    setSymbol(e.target.value);
+    setSymbol(e.target.value.toUpperCase());
   };
 
   const handlePriceChange = (e) => {
@@ -41,31 +45,34 @@ function  StockInput()  {
     setQuantity(e.target.value);
   };
 
-  function handleSubmit()  {
+  function handleSubmit(e)  {
+    e.preventDefault();
     if (symbol && purchasePrice && quantity) {
-        fetchStockPrice(symbol);
-     //   if (latestPrice) {
-          // Add the stock only if we got a valid latest price from the API
-          addStock({
-            symbol,
-            purchasePrice: parseFloat(purchasePrice),
-            quantity: parseInt(quantity),
-            currentPrice, // Assign the fetched latest price here
-          });
-
-          // Clear the input fields after adding the stock
-          setSymbol('');
-          setPurchasePrice('');
-          setQuantity('');
-        }
-   //   });
-      else {
-      alert('Please fill in all fields');
-    }
-  };
+       fetchStockPrice(symbol).then((currentPrice) => {
+      if (typeof currentPrice === 'number') {
+        addStock({
+        symbol,
+        purchasePrice: parseFloat(purchasePrice),
+        quantity: parseInt(quantity),
+        currentPrice: currentPrice, // Assign the fetched latest price here
+        });
+        // Clear the input fields after adding the stock
+        setSymbol('');
+        setPurchasePrice('');
+        setQuantity('');
+      
+      } else {
+        alert('Cannot add stock due to invalid stock price.');
+      }
+    });
+  } else {
+    alert('Please fill in all fields before adding stock.');
+  }
+};
 
   return (
-    <div className="container">
+    
+    <form className="container" onSubmit={handleSubmit}>
       <input
         type="text"
         placeholder="Stock Symbol"
@@ -88,8 +95,9 @@ function  StockInput()  {
         required
       />
 
-      <button type="button" onClick={handleSubmit}>Add Stock</button>
-    </div>
+      <button type="submit">Add Stock</button>
+    </form>
+    
   );
 };
 
